@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "149258257961",
+    "project_id": "fir-function-api-d7f06",
+    "storage_bucket": "fir-function-api-d7f06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149258257961:android:8ef0cb5a059ba3bf3f7e38",
+        "android_client_info": {
+          "package_name": "com.roadmapv.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAueYVz-yfULDFglD9kV7SDd4YJIZ3mDPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149258257961:android:5dfba6ad2b4ed79e3f7e38",
+        "android_client_info": {
+          "package_name": "com.sankha.bustracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAueYVz-yfULDFglD9kV7SDd4YJIZ3mDPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
