@@ -1,7 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:road_map_v2/core/app_export.dart';
 import 'package:road_map_v2/model/user_location.dart';
 import 'package:road_map_v2/widgets/app_bar/appbar_leading_image.dart';
@@ -14,11 +16,27 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late GoogleMapController mapController; // Controller for Google Map
-  late Set<Polyline> polylines = {}; // Initialize polylines set
+  late GoogleMapController mapController;
+  late Set<Polyline> polylines = {};
   String googleApiKey = "AIzaSyCa-Y63qjt3I2XcSItrizLrVXsGulUF7Hg";
-  List<UserLocation> userLocations = []; // Store user locations data
+  List<UserLocation> userLocations = [];
   bool _isPolylinesDrawn = false;
+
+  late LatLng _currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  void _getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = LatLng(position.latitude, position.longitude);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +130,6 @@ class _MapScreenState extends State<MapScreen> {
             _isPolylinesDrawn = true;
           }
 
-          // Create a list of LatLng objects from user locations
           List<LatLng> latLngList = userLocations.map((location) {
             return LatLng(
               location.coordinates.latitude,
@@ -120,7 +137,6 @@ class _MapScreenState extends State<MapScreen> {
             );
           }).toList();
 
-          // Create a set of markers from user locations
           Set<Marker> markers = userLocations.map((location) {
             return Marker(
               markerId: MarkerId(location.id),
@@ -130,21 +146,22 @@ class _MapScreenState extends State<MapScreen> {
             );
           }).toSet();
 
-          // Calculate maximum height based on device's display height
           double maxHeight = MediaQuery.of(context).size.height * 0.8;
 
           return Container(
             height: maxHeight,
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
-                target: latLngList.first, // Initial camera position
-                zoom: 15, // Initial zoom level
+                target: latLngList.first,
+                zoom: 16,
               ),
               onMapCreated: (GoogleMapController controller) {
-                mapController = controller; // Store the controller
+                mapController = controller;
               },
               markers: markers,
-              polylines: polylines, // Set of polylines
+              polylines: polylines,
+              myLocationEnabled: true, // Enable current location button
+              myLocationButtonEnabled: true, // Enable current location feature
             ),
           );
         }
@@ -152,7 +169,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // Method to fetch and draw route direction polylines
   void _drawRouteDirections() async {
     PolylinePoints polylinePoints = PolylinePoints();
     List<PointLatLng> polylineCoordinates = [];
@@ -165,7 +181,7 @@ class _MapScreenState extends State<MapScreen> {
           userLocations[i + 1].coordinates.longitude);
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        googleApiKey, // Your Google Maps API Key
+        googleApiKey,
         source,
         destination,
         travelMode: TravelMode.driving,
