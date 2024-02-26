@@ -124,7 +124,8 @@ class LoginScreen extends StatelessWidget {
           password: passwordController.text.trim(),
         );
         // If login is successful, navigate to the desired screen
-        Navigator.pushNamed(context, AppRoutes.mapScreen);
+        Navigator.pushNamed(context, AppRoutes.appNavigationmapUser);
+        //Navigator.pushNamed(context, AppRoutes.commicunication);
       } catch (e) {
         // Handle errors here
         print("Error signing in: $e");

@@ -24,11 +24,61 @@ class _MapScreenState extends State<MapScreen> {
 
   late LatLng _currentPosition;
 
-  @override
+
+
+
+
+ @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _listenToLocationChanges(); // Call this method in initState to start listening
   }
+
+  void _listenToLocationChanges() {
+    Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.high, distanceFilter: 10)
+        .listen((Position position) {
+      _updateLocationToFirestore(position);
+      print(position.latitude.toDouble());
+      print(position.longitude.toDouble());
+    });
+  }
+
+  void _updateLocationToFirestore(Position position) async {
+    // Assuming you have a 'users' collection and a document ID for the current user
+    // You might want to replace 'currentUserId' with your actual user ID management logic
+    String currentUserId = "track_location";
+   
+    FirebaseFirestore.instance.collection('Bus_locations').doc(currentUserId).set({
+      'name': 'BusTracking', // You can add more user details here
+      'coordinates': GeoPoint(position.latitude, position.longitude),
+      'timestamp': FieldValue.serverTimestamp(), // Adds a server-side timestamp
+    }, SetOptions(merge: true)).then((_) {
+      print("Location updated to Firestore successfully");
+    }).catchError((error) {
+      print("Error updating location to Firestore: $error");
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void _getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
