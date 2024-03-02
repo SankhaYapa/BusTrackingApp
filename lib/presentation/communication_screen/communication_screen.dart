@@ -37,6 +37,8 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(child: Text('No messages'));
                 }
+                snapshot.data!
+                    .sort((a, b) => b.timestamp.compareTo(a.timestamp));
                 return ListView.builder(
                   reverse: true, // Reverse the order of items
                   itemCount: snapshot.data!.length,
