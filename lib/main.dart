@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           theme: theme,
           title: 'road_map_v2',
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.splashScreen,
+          initialRoute: AppRoutes.appNavigationmapUser,
           routes: AppRoutes.routes,
         );
       },
