@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:road_map_v2/presentation/communication_screen/communication_screen.dart';
 import 'package:road_map_v2/presentation/homepage_page/homepage_page.dart';
+import 'package:road_map_v2/presentation/map_screen/map_user.dart';
 import 'package:road_map_v2/presentation/splash_screen/splash_screen.dart';
 import 'package:road_map_v2/presentation/login_screen/login_screen.dart';
 import 'package:road_map_v2/presentation/homepage_container_screen/homepage_container_screen.dart';
@@ -23,12 +24,18 @@ class AppRoutes {
 
   static const String appNavigationScreen = '/app_navigation_screen';
 
+  static const String commicunication = '/app_navigation_screen';
+
+    static const String appNavigationmapUser = '/app_navigation_screen_user';
+
   static Map<String, WidgetBuilder> routes = {
     splashScreen: (context) => SplashScreen(),
     loginScreen: (context) => LoginScreen(),
     homepageContainerScreen: (context) => HomepageContainerScreen(),
     mapScreen: (context) => MapScreen(),
     profileScreen: (context) => CommunicationScreen(),
-    appNavigationScreen: (context) => AppNavigationScreen()
+    appNavigationScreen: (context) => AppNavigationScreen(),
+    commicunication:(context) => CommunicationScreen(),
+    appNavigationmapUser :(context) => MapUser()
   };
 }
