@@ -29,7 +29,6 @@ class _MapUserState extends State<MapUser> {
   double? _remainingDistance;
   String? _arrivalTime;
   List<UserLocation> userLocations = [];
-
   @override
   void initState() {
     super.initState();
@@ -39,7 +38,7 @@ class _MapUserState extends State<MapUser> {
     if (user != null && user.email == "schoolbus@gmail.com") {
       // Don't run _getCurrentLocation() for the specified email
       _getCurrentLocation();
-      _listenToLocationChanges();
+      // _listenToLocationChanges();
     } else {
       // Run _getCurrentLocation() for other users
       _getCurrentLocation();
@@ -101,6 +100,8 @@ class _MapUserState extends State<MapUser> {
         LatLng destinationLatLng =
             LatLng(destinationGeoPoint.latitude, destinationGeoPoint.longitude);
         _drawRouteToDestination(destinationLatLng);
+        _drawRouteDirections();
+
         _calculateSpeed(destinationLatLng);
         _calculateRemainingDistance(destinationLatLng);
         _calculateArrivalTime();
@@ -423,9 +424,7 @@ class _MapUserState extends State<MapUser> {
       );
 
       if (result.points.isNotEmpty) {
-        result.points.forEach((point) {
-          polylineCoordinates.add(point);
-        });
+        polylineCoordinates.addAll(result.points);
       }
     }
 
