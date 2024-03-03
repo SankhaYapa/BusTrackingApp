@@ -377,7 +377,7 @@ class _MapUserState extends State<MapUser> {
                 double maxHeight = MediaQuery.of(context).size.height * 0.8;
 
                 // Draw polylines here
-                _drawRouteDirections();
+                // _drawRouteDirections();
 
                 return Container(
                   height: maxHeight,
