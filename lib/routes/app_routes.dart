@@ -26,16 +26,16 @@ class AppRoutes {
 
   static const String commicunication = '/app_navigation_screen';
 
-    static const String appNavigationmapUser = '/app_navigation_screen_user';
+  static const String appNavigationmapUser = '/app_navigation_screen_user';
 
   static Map<String, WidgetBuilder> routes = {
     splashScreen: (context) => SplashScreen(),
     loginScreen: (context) => LoginScreen(),
     homepageContainerScreen: (context) => HomepageContainerScreen(),
-    mapScreen: (context) => MapScreen(),
-    profileScreen: (context) => CommunicationScreen(),
+    mapScreen: (context) => MapUser(),
+    profileScreen: (context) => ProfileScreen(),
     appNavigationScreen: (context) => AppNavigationScreen(),
-    commicunication:(context) => CommunicationScreen(),
-    appNavigationmapUser :(context) => MapUser()
+    commicunication: (context) => CommunicationScreen(),
+    appNavigationmapUser: (context) => MapUser()
   };
 }

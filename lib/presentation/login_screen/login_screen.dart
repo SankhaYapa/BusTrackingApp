@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:road_map_v2/core/app_export.dart';
+import 'package:road_map_v2/provider/auth_provider.dart';
 import 'package:road_map_v2/widgets/custom_elevated_button.dart';
 import 'package:road_map_v2/widgets/custom_text_form_field.dart';
+import 'package:provider/provider.dart'; // Import your AuthProvider class
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
 
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isLoading = false; // State variable to manage loading state
 
   @override
   Widget build(BuildContext context) {
+    AuthenticationProvider authProvider =
+        Provider.of<AuthenticationProvider>(context);
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SizedBox(
-          width: SizeUtils.width,
+          width: MediaQuery.of(context).size.width,
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -64,6 +75,15 @@ class LoginScreen extends StatelessWidget {
                       textInputAction: TextInputAction.done,
                       textInputType: TextInputType.visiblePassword,
                       obscureText: true,
+                      prefix: Container(
+                        margin: EdgeInsets.fromLTRB(18.0, 10.0, 21.0, 10.0),
+                        child: CustomImageView(
+                          imagePath: ImageConstant.imgImage2,
+                          height: 34.0,
+                          width: 34.0,
+                          color: Colors.grey,
+                        ),
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
@@ -76,12 +96,21 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 30.0),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25.0),
-                    child: CustomElevatedButton(
-                      text: "Login",
-                      onPressed: () {
-                        _signInWithEmailAndPassword(context);
-                      },
-                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                            width: 30,
+                            child:
+                                CircularProgressIndicator()) // Show circular progress if loading
+                        : CustomElevatedButton(
+                            text: "Login",
+                            onPressed: () {
+                              setState(() {
+                                _isLoading = true; // Set loading state to true
+                              });
+                              _signInWithEmailAndPassword(
+                                  context, authProvider);
+                            },
+                          ),
                   ),
                 ],
               ),
@@ -115,21 +144,33 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _signInWithEmailAndPassword(BuildContext context) async {
+  void _signInWithEmailAndPassword(
+      BuildContext context, AuthenticationProvider authProvider) async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
+        User? user = await authProvider.signInWithEmailAndPassword(
+          emailController.text.trim(),
+          passwordController.text.trim(),
         );
-        // If login is successful, navigate to the desired screen
-        Navigator.pushNamed(context, AppRoutes.appNavigationmapUser);
-        //Navigator.pushNamed(context, AppRoutes.commicunication);
+        if (user != null) {
+          // If login is successful, navigate to the desired screen
+          Navigator.pushNamed(context, AppRoutes.homepageContainerScreen);
+        } else {
+          // Handle login failure
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to sign in. Please check your credentials.'),
+          ));
+        }
       } catch (e) {
         // Handle errors here
         print("Error signing in: $e");
-        // You can display error messages to the user using SnackBar or showDialog
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+        ));
+      } finally {
+        setState(() {
+          _isLoading = false; // Set loading state to false
+        });
       }
     }
   }

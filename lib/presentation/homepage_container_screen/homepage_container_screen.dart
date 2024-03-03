@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:road_map_v2/core/app_export.dart';
+import 'package:road_map_v2/presentation/communication_screen/communication_screen.dart';
 import 'package:road_map_v2/presentation/homepage_page/homepage_page.dart';
+import 'package:road_map_v2/presentation/map_screen/map_screen.dart';
+import 'package:road_map_v2/presentation/map_screen/map_user.dart';
+import 'package:road_map_v2/presentation/profile_screen/profile_screen.dart';
 import 'package:road_map_v2/widgets/custom_bottom_bar.dart';
 
 // ignore_for_file: must_be_immutable
@@ -38,9 +42,9 @@ class HomepageContainerScreen extends StatelessWidget {
       case BottomBarEnum.Image19:
         return AppRoutes.mapScreen;
       case BottomBarEnum.Image18:
-        return "/";
+        return AppRoutes.profileScreen;
       case BottomBarEnum.Image22:
-        return "/";
+        return AppRoutes.commicunication;
       default:
         return "/";
     }
@@ -51,6 +55,12 @@ class HomepageContainerScreen extends StatelessWidget {
     switch (currentRoute) {
       case AppRoutes.homepagePage:
         return HomepagePage();
+      case AppRoutes.mapScreen:
+        return MapUser();
+      case AppRoutes.profileScreen:
+        return ProfileScreen();
+      case AppRoutes.commicunication:
+        return CommunicationScreen();
       default:
         return DefaultWidget();
     }

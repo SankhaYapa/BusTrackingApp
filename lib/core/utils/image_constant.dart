@@ -9,6 +9,7 @@ class ImageConstant {
   static String imgLogoooooooooooo = '$imagePath/img_logoooooooooooo.png';
 
   static String imgImage1 = '$imagePath/img_image_1.png';
+  static String imgImage2 = '$imagePath/padlock.png';
 
   // Map images
   static String imgImage12 = '$imagePath/img_image_12.png';
