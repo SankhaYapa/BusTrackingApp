@@ -262,7 +262,8 @@ class _MapUserState extends State<MapUser> {
 
   Widget _buildRow(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 25.h, right: 18.h, bottom: 31.v),
+      padding:
+          EdgeInsets.only(left: 25.h, right: 18.h, bottom: 20.v, top: 10.v),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -370,7 +371,7 @@ class _MapUserState extends State<MapUser> {
                       target: busLatLngList.isNotEmpty
                           ? busLatLngList.first
                           : LatLng(0.0, 0.0),
-                      zoom: 16,
+                      zoom: 11,
                     ),
                     onMapCreated: (GoogleMapController controller) {
                       mapController = controller;
