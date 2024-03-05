@@ -38,7 +38,7 @@ class _MapUserState extends State<MapUser> {
     if (user != null && user.email == "schoolbus@gmail.com") {
       // Don't run _getCurrentLocation() for the specified email
       _getCurrentLocation();
-      // _listenToLocationChanges();
+      _listenToLocationChanges();
     } else {
       // Run _getCurrentLocation() for other users
       _getCurrentLocation();
@@ -53,25 +53,28 @@ class _MapUserState extends State<MapUser> {
     Geolocator.getPositionStream(
             desiredAccuracy: LocationAccuracy.high, distanceFilter: 10)
         .listen((Position position) {
-      _updateLocationToDatabase(position);
+      _updateLocationToFirestore(position);
       print(position.latitude.toDouble());
       print(position.longitude.toDouble());
     });
   }
 
-  void _updateLocationToDatabase(Position position) {
-    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+  void _updateLocationToFirestore(Position position) async {
+    // Assuming you have a 'users' collection and a document ID for the current user
+    // You might want to replace 'currentUserId' with your actual user ID management logic
     String currentUserId = "track_location";
 
-    databaseReference.child('Bus_locations').child(currentUserId).set({
+    FirebaseFirestore.instance
+        .collection('Bus_locations')
+        .doc(currentUserId)
+        .set({
       'name': 'BusTracking', // You can add more user details here
-      'latitude': position.latitude,
-      'longitude': position.longitude,
-      'timestamp': ServerValue.timestamp, // Use ServerValue.timestamp here
-    }).then((_) {
-      print("Location updated to Database successfully");
+      'coordinates': GeoPoint(position.latitude, position.longitude),
+      'timestamp': FieldValue.serverTimestamp(), // Adds a server-side timestamp
+    }, SetOptions(merge: true)).then((_) {
+      print("Location updated to Firestore successfully");
     }).catchError((error) {
-      print("Error updating location to Database: $error");
+      print("Error updating location to Firestore: $error");
     });
   }
 
@@ -87,6 +90,7 @@ class _MapUserState extends State<MapUser> {
     });
     _subscribeToDestinationUpdates(); // Start listening for destination updates
     _showRouteToDestination(); // Show initial route
+    _subscribeToDestinationUpdates2();
   }
 
   void _subscribeToDestinationUpdates() {
@@ -99,12 +103,26 @@ class _MapUserState extends State<MapUser> {
         GeoPoint destinationGeoPoint = snapshot['coordinates'];
         LatLng destinationLatLng =
             LatLng(destinationGeoPoint.latitude, destinationGeoPoint.longitude);
-        _drawRouteToDestination(destinationLatLng);
         _drawRouteDirections();
 
         _calculateSpeed(destinationLatLng);
         _calculateRemainingDistance(destinationLatLng);
         _calculateArrivalTime();
+      }
+    });
+  }
+
+  void _subscribeToDestinationUpdates2() {
+    FirebaseFirestore.instance
+        .collection('user_locations') // Change collection to 'user_locations'
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        userLocations =
+            snapshot.docs.map((doc) => UserLocation.fromDocument(doc)).toList();
+        if (userLocations.length >= 2) {
+          _drawRouteDirections(); // Call _drawRouteDirections if there are at least two locations
+        }
       }
     });
   }
@@ -158,36 +176,6 @@ class _MapUserState extends State<MapUser> {
     }
   }
 
-  void _drawRouteToDestination(LatLng destinationLocation) async {
-    // Clear previous polylines
-    polylines.clear();
-
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> polylineCoordinates = [];
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleApiKey,
-      PointLatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-      PointLatLng(destinationLocation.latitude, destinationLocation.longitude),
-      travelMode: TravelMode.driving,
-    );
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(point);
-      });
-    }
-    Polyline polyline = Polyline(
-      polylineId: PolylineId("route"),
-      color: Colors.blue,
-      points: polylineCoordinates
-          .map((point) => LatLng(point.latitude, point.longitude))
-          .toList(),
-      width: 5,
-    );
-    setState(() {
-      polylines.add(polyline);
-    });
-  }
-
   void _showRouteToDestination() async {
     if (_currentPosition != null) {
       try {
@@ -199,7 +187,6 @@ class _MapUserState extends State<MapUser> {
           GeoPoint destinationGeoPoint = destinationDoc['coordinates'];
           LatLng destinationLocation = LatLng(
               destinationGeoPoint.latitude, destinationGeoPoint.longitude);
-          _drawRouteToDestination(destinationLocation);
         }
       } catch (e) {
         print("Error fetching destination or drawing route: $e");
@@ -375,9 +362,6 @@ class _MapUserState extends State<MapUser> {
                 }).toSet();
 
                 double maxHeight = MediaQuery.of(context).size.height * 0.8;
-
-                // Draw polylines here
-                // _drawRouteDirections();
 
                 return Container(
                   height: maxHeight,

@@ -18,7 +18,7 @@ class HomepagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(context),
+        //  appBar: _buildAppBar(context),
         body: SingleChildScrollView(
           child: Container(
             width: double.maxFinite,
@@ -154,7 +154,7 @@ class HomepagePage extends StatelessWidget {
     return CustomAppBar(
       leadingWidth: double.maxFinite,
       leading: AppbarLeadingImage(
-        imagePath: ImageConstant.imgImage3,
+        //  imagePath: ImageConstant.imgImage3,
         margin: EdgeInsets.only(
           top: 7.v,
           right: 294.h,
